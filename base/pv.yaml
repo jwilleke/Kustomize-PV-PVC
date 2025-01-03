@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-local-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain # Retain the volume even after the claim is deleted
+  storageClassName: microk8s-hostpath # must match the storage class name in the pvc.yaml
+  local:
+    path: /mnt/data-pv # Replace with your local path. E.g., `/mnt/data-pv` MUST EXIST on host machine
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+              - deby # Replace with your node name. E.g., `your-machine`
