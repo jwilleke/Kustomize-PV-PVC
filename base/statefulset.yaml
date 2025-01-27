@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginx-app
+  namespace: nginx-app
+spec:
+  serviceName: nginx-app
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-app
+  template:
+    metadata:
+      labels:
+        app: nginx-app
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: pvappsdata # name of the persistent volume must match
+              mountPath: /usr/share/nginx/html # path in node
+      volumes:
+        - name: pvappsdata 
+          claimName: pvc-nginx-app 
+  volumeClaimTemplates:
+    - metadata:
+        name: pvc-nginx-app
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: local-storage
+        resources:
+          requests:
